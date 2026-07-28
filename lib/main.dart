@@ -4,6 +4,7 @@ void main() {
   runApp(const MyApp());
 }
 
+// Main App
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -11,486 +12,507 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Settings UI",
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-      ),
-      home: const SettingsPage(),
+      title: "Student Information",
+
+      // Named Route
+      routes: {
+        "/edit": (context) => const EditCourseScreen(),
+      },
+
+      home: const HomeScreen(),
     );
   }
 }
 
-class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+// ---------------- HOME SCREEN ----------------
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _HomeScreenState extends State<HomeScreen> {
 
-  // Switch
-  bool notifications = true;
+  // Controllers
+  final TextEditingController nameController =
+      TextEditingController();
 
-  // Toggle Buttons
-  List<bool> selectedTheme = [false, true];
-  String currentTheme = "Dark";
+  final TextEditingController rollController =
+      TextEditingController();
 
-  // Radio
-  String gender = "Female";
+  // Default Course
+  String selectedCourse = "Flutter";
 
-  // Checkbox
-  bool accepted = true;
+  // Updated Course
+  String updatedCourse = "";
 
-  // Slider
-  double fontSize = 20;
+  @override
+  Widget build(BuildContext context) {
 
-  // Choice Chip
-  String selectedInterest = "Flutter";
+    return Scaffold(
 
-  // Stepper
-  int currentStep = 0;
+      appBar: AppBar(
+        title: const Text("Student Information"),
+        backgroundColor: Colors.blue,
+        centerTitle: true,
+      ),
+
+      body: SingleChildScrollView(
+
+        padding: const EdgeInsets.all(16),
+
+        child: Column(
+
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+
+          children: [
+
+            const Text(
+              "Student Name",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 5),
+
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Enter Name",
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            const Text(
+              "Roll Number",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 5),
+
+            TextField(
+              controller: rollController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Enter Roll Number",
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            const Text(
+              "Select Course",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 5),
+
+            DropdownButtonFormField<String>(
+
+              value: selectedCourse,
+
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+
+              items: const [
+
+                DropdownMenuItem(
+                  value: "Flutter",
+                  child: Text("Flutter"),
+                ),
+
+                DropdownMenuItem(
+                  value: "Java",
+                  child: Text("Java"),
+                ),
+
+                DropdownMenuItem(
+                  value: "Python",
+                  child: Text("Python"),
+                ),
+
+                DropdownMenuItem(
+                  value: "AI",
+                  child: Text("AI"),
+                ),
+
+              ],
+
+              onChanged: (value) {
+
+                setState(() {
+
+                  selectedCourse = value!;
+
+                });
+
+              },
+
+            ),
+
+            const SizedBox(height: 25),
+
+            SizedBox(
+
+              width: double.infinity,
+
+              child: ElevatedButton.icon(
+
+                icon: const Icon(Icons.visibility),
+
+                label: const Text("View Details"),
+
+                onPressed: () async {
+
+                  final result =
+                      await Navigator.push(
+
+                    context,
+
+                    MaterialPageRoute(
+
+                      builder: (context) =>
+                          StudentDetailsScreen(
+
+                        name: nameController.text,
+
+                        rollNo:
+                            rollController.text,
+
+                        course:
+                            selectedCourse,
+
+                      ),
+
+                    ),
+
+                  );
+
+                  if (result != null) {
+
+                    setState(() {
+
+                      updatedCourse = result;
+
+                    });
+
+                  }
+
+                },
+
+              ),
+
+            ),
+
+            const SizedBox(height: 20),
+
+            if (updatedCourse.isNotEmpty)
+
+              Card(
+
+                color: Colors.green.shade50,
+
+                child: Padding(
+
+                  padding:
+                      const EdgeInsets.all(12),
+
+                  child: Text(
+
+                    "Updated Course : $updatedCourse",
+
+                    style: const TextStyle(
+
+                      fontWeight:
+                          FontWeight.bold,
+
+                      color: Colors.green,
+
+                    ),
+
+                  ),
+
+                ),
+
+              ),
+
+          ],
+
+        ),
+
+      ),
+
+    );
+
+  }
+
+}
+// ---------------- STUDENT DETAILS SCREEN ----------------
+
+class StudentDetailsScreen extends StatelessWidget {
+  final String name;
+  final String rollNo;
+  final String course;
+
+  const StudentDetailsScreen({
+    super.key,
+    required this.name,
+    required this.rollNo,
+    required this.course,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Settings"),
-        backgroundColor: Colors.deepPurple,
-        centerTitle: true,
+        title: const Text("Student Details"),
+        backgroundColor: Colors.green,
       ),
-      body: SingleChildScrollView(
+
+      body: Padding(
         padding: const EdgeInsets.all(16),
+
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+
           children: [
 
-            // Switch
+            Card(
+              elevation: 5,
 
-            const Row(
-              children: [
-                Icon(Icons.notifications,color: Colors.deepPurple),
-                SizedBox(width:10),
-                Text(
-                  "Enable Notifications",
-                  style: TextStyle(
-                    fontSize:18,
-                    fontWeight: FontWeight.bold,
-                  ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+
+                  children: [
+
+                    const Center(
+                      child: Text(
+                        "Student Details",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    ListTile(
+                      leading: const Icon(Icons.person),
+                      title: const Text("Name"),
+                      subtitle: Text(name),
+                    ),
+
+                    ListTile(
+                      leading: const Icon(Icons.badge),
+                      title: const Text("Roll No"),
+                      subtitle: Text(rollNo),
+                    ),
+
+                    ListTile(
+                      leading: const Icon(Icons.school),
+                      title: const Text("Course"),
+                      subtitle: Text(course),
+                    ),
+
+                  ],
                 ),
-              ],
+              ),
             ),
 
-            SwitchListTile(
-              value: notifications,
-              activeColor: Colors.deepPurple,
-              title: Text(
-                notifications
-                    ? "Notifications : Enabled"
-                    : "Notifications : Disabled",
+            const SizedBox(height: 25),
+
+            ElevatedButton.icon(
+
+              icon: const Icon(Icons.edit),
+
+              label: const Text("Edit Course"),
+
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
               ),
-              onChanged: (value){
-                setState(() {
-                  notifications=value;
-                });
+
+              onPressed: () async {
+
+                final updatedCourse =
+                    await Navigator.pushNamed(
+                  context,
+                  "/edit",
+                  arguments: course,
+                );
+
+                if (updatedCourse != null) {
+
+                  Navigator.pop(
+                    context,
+                    updatedCourse,
+                  );
+
+                }
+
               },
+
             ),
 
-            const Divider(),
+            const SizedBox(height: 15),
 
-            // Theme
+            ElevatedButton.icon(
 
-            const Text(
-              "Choose Theme",
-              style: TextStyle(
-                fontSize:18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+              icon: const Icon(Icons.arrow_back),
 
-            const SizedBox(height:10),
+              label: const Text("Go Back"),
 
-            Center(
-              child: ToggleButtons(
-                borderRadius: BorderRadius.circular(10),
-                isSelected: selectedTheme,
-                onPressed: (index){
-                  setState(() {
+              onPressed: () {
 
-                    for(int i=0;i<selectedTheme.length;i++){
-                      selectedTheme[i]=i==index;
-                    }
+                Navigator.pop(context);
 
-                    currentTheme=index==0?"Light":"Dark";
-
-                  });
-                },
-                children: const [
-
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal:25,
-                        vertical:10),
-                    child: Row(
-                      children: [
-                        Icon(Icons.light_mode),
-                        SizedBox(width:5),
-                        Text("Light"),
-                      ],
-                    ),
-                  ),
-
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal:25,
-                        vertical:10),
-                    child: Row(
-                      children: [
-                        Icon(Icons.dark_mode),
-                        SizedBox(width:5),
-                        Text("Dark"),
-                      ],
-                    ),
-                  ),
-
-                ],
-              ),
-            ),
-
-            const SizedBox(height:10),
-
-            Text(
-              "Selected Theme : $currentTheme",
-              style: const TextStyle(
-                color: Colors.deepPurple,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const Divider(),
-                        // Radio Buttons
-
-            const Text(
-              "Select Gender",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            RadioListTile<String>(
-              value: "Male",
-              groupValue: gender,
-              title: const Text("Male"),
-              onChanged: (value) {
-                setState(() {
-                  gender = value!;
-                });
               },
+
             ),
 
-            RadioListTile<String>(
-              value: "Female",
-              groupValue: gender,
-              title: const Text("Female"),
-              onChanged: (value) {
-                setState(() {
-                  gender = value!;
-                });
-              },
-            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-            RadioListTile<String>(
-              value: "Other",
-              groupValue: gender,
-              title: const Text("Other"),
-              onChanged: (value) {
-                setState(() {
-                  gender = value!;
-                });
-              },
-            ),
+// ---------------- EDIT COURSE SCREEN ----------------
 
-            Text(
-              "Selected Gender : $gender",
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.deepPurple,
-              ),
-            ),
+class EditCourseScreen extends StatefulWidget {
+  const EditCourseScreen({super.key});
 
-            const Divider(),
+  @override
+  State<EditCourseScreen> createState() =>
+      _EditCourseScreenState();
+}
 
-            // Checkbox
+class _EditCourseScreenState
+    extends State<EditCourseScreen> {
 
-            CheckboxListTile(
-              value: accepted,
-              title: const Text("Accept Terms & Conditions"),
-              activeColor: Colors.deepPurple,
-              onChanged: (value) {
-                setState(() {
-                  accepted = value!;
-                });
-              },
-            ),
+  String selectedCourse = "Flutter";
 
-            Text(
-              accepted
-                  ? "Terms Accepted"
-                  : "Terms Not Accepted",
-              style: TextStyle(
-                color: accepted ? Colors.green : Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+  @override
+  Widget build(BuildContext context) {
 
-            const Divider(),
+    // Receive current course
+    final String currentCourse =
+        ModalRoute.of(context)!.settings.arguments
+            as String;
 
-            // Slider
+    selectedCourse = currentCourse;
 
-            const Text(
-              "Adjust Font Size",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Edit Course"),
+        backgroundColor: Colors.orange,
+      ),
 
-            Slider(
-              value: fontSize,
-              min: 10,
-              max: 40,
-              divisions: 30,
-              label: fontSize.round().toString(),
-              onChanged: (value) {
-                setState(() {
-                  fontSize = value;
-                });
-              },
-            ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
 
-            Center(
+        child: Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+
+          children: [
+
+            const Center(
               child: Text(
-                "Flutter is Awesome!",
+                "Select New Course",
                 style: TextStyle(
-                  fontSize: fontSize,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
 
-            const Divider(),
+            const SizedBox(height: 20),
 
-            // Choice Chips
-
-            const Text(
-              "Choose Your Interests",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            Wrap(
-              spacing: 10,
-              children: [
-
-                ChoiceChip(
-                  label: const Text("Flutter"),
-                  selected: selectedInterest == "Flutter",
-                  onSelected: (value) {
-                    setState(() {
-                      selectedInterest = "Flutter";
-                    });
-                  },
-                ),
-
-                ChoiceChip(
-                  label: const Text("AI"),
-                  selected: selectedInterest == "AI",
-                  onSelected: (value) {
-                    setState(() {
-                      selectedInterest = "AI";
-                    });
-                  },
-                ),
-
-                ChoiceChip(
-                  label: const Text("Web"),
-                  selected: selectedInterest == "Web",
-                  onSelected: (value) {
-                    setState(() {
-                      selectedInterest = "Web";
-                    });
-                  },
-                ),
-
-                ChoiceChip(
-                  label: const Text("Game Dev"),
-                  selected: selectedInterest == "Game Dev",
-                  onSelected: (value) {
-                    setState(() {
-                      selectedInterest = "Game Dev";
-                    });
-                  },
-                ),
-
-              ],
-            ),
-
-            const SizedBox(height: 10),
-
-            Text(
-              "Selected Interest : $selectedInterest",
-              style: const TextStyle(
-                color: Colors.deepPurple,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const Divider(),
-                        // Action Chips
-
-            const Text(
-              "Quick Actions",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            Wrap(
-              spacing: 10,
-              children: [
-
-                ActionChip(
-                  avatar: const Icon(Icons.refresh),
-                  label: const Text("Reset"),
-                  onPressed: () {
-                    setState(() {
-                      notifications = true;
-                      selectedTheme = [false, true];
-                      currentTheme = "Dark";
-                      gender = "Female";
-                      accepted = true;
-                      fontSize = 20;
-                      selectedInterest = "Flutter";
-                      currentStep = 0;
-                    });
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Settings Reset Successfully"),
-                      ),
-                    );
-                  },
-                ),
-
-                ActionChip(
-                  avatar: const Icon(Icons.save),
-                  label: const Text("Save"),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Settings Saved Successfully"),
-                      ),
-                    );
-                  },
-                ),
-
-              ],
-            ),
-
-            const Divider(),
-
-            // Stepper
-
-            const Text(
-              "Profile Setup",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            Stepper(
-              currentStep: currentStep,
-
-              onStepContinue: () {
-                if (currentStep < 2) {
-                  setState(() {
-                    currentStep++;
-                  });
-                }
-              },
-
-              onStepCancel: () {
-                if (currentStep > 0) {
-                  setState(() {
-                    currentStep--;
-                  });
-                }
-              },
-
-              onStepTapped: (step) {
+            RadioListTile<String>(
+              title: const Text("Flutter"),
+              value: "Flutter",
+              groupValue: selectedCourse,
+              onChanged: (value) {
                 setState(() {
-                  currentStep = step;
+                  selectedCourse = value!;
                 });
               },
+            ),
 
-              steps: const [
+            RadioListTile<String>(
+              title: const Text("Java"),
+              value: "Java",
+              groupValue: selectedCourse,
+              onChanged: (value) {
+                setState(() {
+                  selectedCourse = value!;
+                });
+              },
+            ),
 
-                Step(
-                  title: Text("Account"),
-                  content: Text("Setup your account"),
-                  isActive: true,
-                ),
+            RadioListTile<String>(
+              title: const Text("Python"),
+              value: "Python",
+              groupValue: selectedCourse,
+              onChanged: (value) {
+                setState(() {
+                  selectedCourse = value!;
+                });
+              },
+            ),
 
-                Step(
-                  title: Text("Profile"),
-                  content: Text("Complete your profile"),
-                  isActive: true,
-                ),
-
-                Step(
-                  title: Text("Finish"),
-                  content: Text("All Done!"),
-                  isActive: true,
-                ),
-
-              ],
+            RadioListTile<String>(
+              title: const Text("AI"),
+              value: "AI",
+              groupValue: selectedCourse,
+              onChanged: (value) {
+                setState(() {
+                  selectedCourse = value!;
+                });
+              },
             ),
 
             const SizedBox(height: 20),
 
             SizedBox(
               width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
+
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.save),
+                label: const Text("Save Changes"),
+
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                ),
+
                 onPressed: () {
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Settings Saved Successfully!",
-                      ),
-                    ),
+                  // Return updated course
+                  Navigator.pop(
+                    context,
+                    selectedCourse,
                   );
 
                 },
-
-                child: const Text(
-                  "Save Settings",
-                  style: TextStyle(fontSize: 18),
-                ),
               ),
             ),
-
-            const SizedBox(height: 20),
 
           ],
         ),
