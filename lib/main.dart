@@ -1,507 +1,497 @@
 import 'package:flutter/material.dart';
 
-// Main Function
 void main() {
   runApp(const MyApp());
 }
 
-// Root Widget
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SmartCafeScreen(),
+      title: "Settings UI",
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+      ),
+      home: const SettingsPage(),
     );
   }
 }
 
-// StatefulWidget because UI changes dynamically
-class SmartCafeScreen extends StatefulWidget {
-  const SmartCafeScreen({super.key});
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
 
   @override
-  State<SmartCafeScreen> createState() => _SmartCafeScreenState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SmartCafeScreenState extends State<SmartCafeScreen> {
+class _SettingsPageState extends State<SettingsPage> {
 
-  // Dropdown categories
-  final List<String> categories = [
-    "Burger",
-    "Pizza",
-    "Sandwich",
-    "Cold Coffee",
-    "French Fries"
-  ];
+  // Switch
+  bool notifications = true;
 
-  // Selected Category
-  String selectedCategory = "Burger";
+  // Toggle Buttons
+  List<bool> selectedTheme = [false, true];
+  String currentTheme = "Dark";
 
-  // Quantity
-  int quantity = 1;
+  // Radio
+  String gender = "Female";
 
-  // AppBar Title
-  String title = "Smart Café";
+  // Checkbox
+  bool accepted = true;
 
-  // AppBar Color
-  Color appBarColor = Colors.deepPurple;
+  // Slider
+  double fontSize = 20;
+
+  // Choice Chip
+  String selectedInterest = "Flutter";
+
+  // Stepper
+  int currentStep = 0;
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
-      // AppBar
       appBar: AppBar(
-        backgroundColor: appBarColor,
-        foregroundColor: Colors.white,
-        title: Text(title),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: Icon(Icons.more_vert),
-          )
-        ],
-      ),
-
-      // Floating Action Button
-      floatingActionButton: FloatingActionButton.extended(
+        title: const Text("Settings"),
         backgroundColor: Colors.deepPurple,
-        onPressed: () {},
-        icon: const Icon(Icons.local_offer,color: Colors.white),
-        label: const Text(
-          "Today's\nSpecial",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 10,
-          ),
-        ),
+        centerTitle: true,
       ),
-
       body: SingleChildScrollView(
-
         padding: const EdgeInsets.all(16),
-
         child: Column(
-
           crossAxisAlignment: CrossAxisAlignment.start,
-
           children: [
 
-            // Category Heading
-            const Text(
-              "Choose Category",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            // Switch
 
-            const SizedBox(height:8),
-
-            // Dropdown Button
-            DropdownButtonFormField<String>(
-
-              value: selectedCategory,
-
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius:
-                  BorderRadius.circular(10),
-                ),
-              ),
-
-              items: categories.map((item){
-
-                return DropdownMenuItem(
-
-                  value:item,
-
-                  child: Row(
-                    children: [
-
-                      const Text(
-                        "🍔",
-                        style: TextStyle(fontSize:20),
-                      ),
-
-                      const SizedBox(width:8),
-
-                      Text(item),
-
-                    ],
+            const Row(
+              children: [
+                Icon(Icons.notifications,color: Colors.deepPurple),
+                SizedBox(width:10),
+                Text(
+                  "Enable Notifications",
+                  style: TextStyle(
+                    fontSize:18,
+                    fontWeight: FontWeight.bold,
                   ),
-
-                );
-
-              }).toList(),
-
-              onChanged:(value){
-
-                setState(() {
-
-                  selectedCategory=value!;
-
-                });
-
-              },
-
+                ),
+              ],
             ),
 
-            const SizedBox(height:20),
+            SwitchListTile(
+              value: notifications,
+              activeColor: Colors.deepPurple,
+              title: Text(
+                notifications
+                    ? "Notifications : Enabled"
+                    : "Notifications : Disabled",
+              ),
+              onChanged: (value){
+                setState(() {
+                  notifications=value;
+                });
+              },
+            ),
+
+            const Divider(),
+
+            // Theme
 
             const Text(
-              "Selected Item",
+              "Choose Theme",
               style: TextStyle(
+                fontSize:18,
                 fontWeight: FontWeight.bold,
               ),
             ),
 
             const SizedBox(height:10),
 
-            Card(
+            Center(
+              child: ToggleButtons(
+                borderRadius: BorderRadius.circular(10),
+                isSelected: selectedTheme,
+                onPressed: (index){
+                  setState(() {
 
-              elevation:4,
+                    for(int i=0;i<selectedTheme.length;i++){
+                      selectedTheme[i]=i==index;
+                    }
 
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                BorderRadius.circular(12),
-              ),
+                    currentTheme=index==0?"Light":"Dark";
 
-              child: Padding(
+                  });
+                },
+                children: const [
 
-                padding: const EdgeInsets.all(10),
-
-                child: Row(
-
-                  children: [
-
-                    ClipRRect(
-
-                      borderRadius:
-                      BorderRadius.circular(10),
-
-                      child: Image.network(
-
-                        "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400",
-
-                        width:80,
-                        height:80,
-                        fit: BoxFit.cover,
-
-                      ),
-
-                    ),
-
-                    const SizedBox(width:12),
-
-                    Expanded(
-
-                      child: Column(
-
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
-
-                        children: [
-
-                          const Text(
-
-                            "Veg Burger",
-
-                            style: TextStyle(
-                              fontWeight:
-                              FontWeight.bold,
-                              fontSize:18,
-                            ),
-
-                          ),
-
-                          const SizedBox(height:5),
-
-                          const Text(
-
-                            "Delicious veg burger\nwith fresh veggies and cheese.",
-
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize:12,
-                            ),
-
-                          ),
-
-                          const SizedBox(height:5),
-
-                          const Text(
-
-                            "₹120",
-
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight:
-                              FontWeight.bold,
-                            ),
-
-                          ),
-
-                        ],
-
-                      ),
-
-                    ),
-
-                    PopupMenuButton(
-
-                      itemBuilder:(context)=>const[
-
-                        PopupMenuItem(
-                          child: Row(
-                            children:[
-                              Icon(Icons.add,color:Colors.orange),
-                              SizedBox(width:10),
-                              Text("Add Cheese"),
-                            ],
-                          ),
-                        ),
-
-                        PopupMenuItem(
-                          child: Row(
-                            children:[
-                              Icon(Icons.local_fire_department,color:Colors.red),
-                              SizedBox(width:10),
-                              Text("Extra Sauce"),
-                            ],
-                          ),
-                        ),
-
-                        PopupMenuItem(
-                          child: Row(
-                            children:[
-                              Icon(Icons.info,color:Colors.green),
-                              SizedBox(width:10),
-                              Text("View Nutrition"),
-                            ],
-                          ),
-                        ),
-
-                        PopupMenuItem(
-                          child: Row(
-                            children:[
-                              Icon(Icons.share,color:Colors.blue),
-                              SizedBox(width:10),
-                              Text("Share Item"),
-                            ],
-                          ),
-                        ),
-
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal:25,
+                        vertical:10),
+                    child: Row(
+                      children: [
+                        Icon(Icons.light_mode),
+                        SizedBox(width:5),
+                        Text("Light"),
                       ],
-
                     ),
+                  ),
 
-                  ],
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal:25,
+                        vertical:10),
+                    child: Row(
+                      children: [
+                        Icon(Icons.dark_mode),
+                        SizedBox(width:5),
+                        Text("Dark"),
+                      ],
+                    ),
+                  ),
 
-                ),
-
+                ],
               ),
-
             ),
-                        const SizedBox(height: 20),
 
-            // Quantity Heading
+            const SizedBox(height:10),
+
+            Text(
+              "Selected Theme : $currentTheme",
+              style: const TextStyle(
+                color: Colors.deepPurple,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const Divider(),
+                        // Radio Buttons
+
             const Text(
-              "Quantity",
+              "Select Gender",
               style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            RadioListTile<String>(
+              value: "Male",
+              groupValue: gender,
+              title: const Text("Male"),
+              onChanged: (value) {
+                setState(() {
+                  gender = value!;
+                });
+              },
+            ),
+
+            RadioListTile<String>(
+              value: "Female",
+              groupValue: gender,
+              title: const Text("Female"),
+              onChanged: (value) {
+                setState(() {
+                  gender = value!;
+                });
+              },
+            ),
+
+            RadioListTile<String>(
+              value: "Other",
+              groupValue: gender,
+              title: const Text("Other"),
+              onChanged: (value) {
+                setState(() {
+                  gender = value!;
+                });
+              },
+            ),
+
+            Text(
+              "Selected Gender : $gender",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
+              ),
+            ),
+
+            const Divider(),
+
+            // Checkbox
+
+            CheckboxListTile(
+              value: accepted,
+              title: const Text("Accept Terms & Conditions"),
+              activeColor: Colors.deepPurple,
+              onChanged: (value) {
+                setState(() {
+                  accepted = value!;
+                });
+              },
+            ),
+
+            Text(
+              accepted
+                  ? "Terms Accepted"
+                  : "Terms Not Accepted",
+              style: TextStyle(
+                color: accepted ? Colors.green : Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const Divider(),
+
+            // Slider
+
+            const Text(
+              "Adjust Font Size",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            Slider(
+              value: fontSize,
+              min: 10,
+              max: 40,
+              divisions: 30,
+              label: fontSize.round().toString(),
+              onChanged: (value) {
+                setState(() {
+                  fontSize = value;
+                });
+              },
+            ),
+
+            Center(
+              child: Text(
+                "Flutter is Awesome!",
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const Divider(),
+
+            // Choice Chips
+
+            const Text(
+              "Choose Your Interests",
+              style: TextStyle(
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
 
             const SizedBox(height: 10),
 
-            // Quantity Buttons
-            Row(
+            Wrap(
+              spacing: 10,
               children: [
 
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Color(0xffEFE9FF),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.remove,
-                        color: Colors.deepPurple),
-                    onPressed: () {
-                      if (quantity > 1) {
-                        setState(() {
-                          quantity--;
-                        });
-                      }
-                    },
-                  ),
+                ChoiceChip(
+                  label: const Text("Flutter"),
+                  selected: selectedInterest == "Flutter",
+                  onSelected: (value) {
+                    setState(() {
+                      selectedInterest = "Flutter";
+                    });
+                  },
                 ),
 
-                const SizedBox(width: 20),
-
-                Text(
-                  "$quantity",
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                ChoiceChip(
+                  label: const Text("AI"),
+                  selected: selectedInterest == "AI",
+                  onSelected: (value) {
+                    setState(() {
+                      selectedInterest = "AI";
+                    });
+                  },
                 ),
 
-                const SizedBox(width: 20),
-
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Color(0xffEFE9FF),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.add,
-                        color: Colors.deepPurple),
-                    onPressed: () {
-                      setState(() {
-                        quantity++;
-                      });
-                    },
-                  ),
+                ChoiceChip(
+                  label: const Text("Web"),
+                  selected: selectedInterest == "Web",
+                  onSelected: (value) {
+                    setState(() {
+                      selectedInterest = "Web";
+                    });
+                  },
                 ),
+
+                ChoiceChip(
+                  label: const Text("Game Dev"),
+                  selected: selectedInterest == "Game Dev",
+                  onSelected: (value) {
+                    setState(() {
+                      selectedInterest = "Game Dev";
+                    });
+                  },
+                ),
+
               ],
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
 
-            // Place Order Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(10),
-                  ),
-                ),
-                onPressed: () {
+            Text(
+              "Selected Interest : $selectedInterest",
+              style: const TextStyle(
+                color: Colors.deepPurple,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      backgroundColor: Colors.green,
-                      content: const Text(
-                        "Order Placed Successfully!!",
-                      ),
-                      action: SnackBarAction(
-                        label: "DISMISS",
-                        textColor: Colors.white,
-                        onPressed: () {},
-                      ),
-                    ),
-                  );
+            const Divider(),
+                        // Action Chips
 
-                },
-                icon: const Icon(Icons.shopping_cart),
-                label: const Text("Place Order"),
+            const Text(
+              "Quick Actions",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
 
             const SizedBox(height: 10),
 
-            // Save Button
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.bookmark_border),
-                label: const Text("Save for Later"),
+            Wrap(
+              spacing: 10,
+              children: [
+
+                ActionChip(
+                  avatar: const Icon(Icons.refresh),
+                  label: const Text("Reset"),
+                  onPressed: () {
+                    setState(() {
+                      notifications = true;
+                      selectedTheme = [false, true];
+                      currentTheme = "Dark";
+                      gender = "Female";
+                      accepted = true;
+                      fontSize = 20;
+                      selectedInterest = "Flutter";
+                      currentStep = 0;
+                    });
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Settings Reset Successfully"),
+                      ),
+                    );
+                  },
+                ),
+
+                ActionChip(
+                  avatar: const Icon(Icons.save),
+                  label: const Text("Save"),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Settings Saved Successfully"),
+                      ),
+                    );
+                  },
+                ),
+
+              ],
+            ),
+
+            const Divider(),
+
+            // Stepper
+
+            const Text(
+              "Profile Setup",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
 
-            // Clear Selection
-            Center(
-              child: TextButton.icon(
-                onPressed: () {
+            Stepper(
+              currentStep: currentStep,
+
+              onStepContinue: () {
+                if (currentStep < 2) {
                   setState(() {
-                    selectedCategory = "Burger";
-                    quantity = 1;
+                    currentStep++;
                   });
-                },
-                icon: const Icon(Icons.delete_outline,
-                    color: Colors.red),
-                label: const Text(
-                  "Clear Selection",
-                  style: TextStyle(color: Colors.red),
+                }
+              },
+
+              onStepCancel: () {
+                if (currentStep > 0) {
+                  setState(() {
+                    currentStep--;
+                  });
+                }
+              },
+
+              onStepTapped: (step) {
+                setState(() {
+                  currentStep = step;
+                });
+              },
+
+              steps: const [
+
+                Step(
+                  title: Text("Account"),
+                  content: Text("Setup your account"),
+                  isActive: true,
                 ),
-              ),
+
+                Step(
+                  title: Text("Profile"),
+                  content: Text("Complete your profile"),
+                  isActive: true,
+                ),
+
+                Step(
+                  title: Text("Finish"),
+                  content: Text("All Done!"),
+                  isActive: true,
+                ),
+
+              ],
             ),
 
             const SizedBox(height: 20),
-
-            // Order Button
-            Center(
-              child: TextButton(
-                onPressed: () {},
-                child: const Text(
-                  "Order on iPhone Style",
-                  style: TextStyle(
-                    color: Colors.deepPurple,
-                  ),
-                ),
-              ),
-            ),
 
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue,
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () {},
-                icon: const Icon(Icons.apple),
-                label:
-                    const Text("Order on iPhone Style"),
-              ),
-            ),
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
 
-            const SizedBox(height: 20),
-
-            // Today's Special Card
-            Card(
-              elevation: 3,
-              child: ListTile(
-                leading: const Text(
-                  "🎉",
-                  style: TextStyle(fontSize: 40),
-                ),
-                title: const Text(
-                  "Today's Special",
-                  style: TextStyle(
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: const Text(
-                  "Veg Burger\n₹99",
-                ),
-                trailing: CircleAvatar(
-                  backgroundColor:
-                      Colors.deepPurple.shade50,
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.deepPurple,
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Settings Saved Successfully!",
+                      ),
                     ),
-                  ),
+                  );
+
+                },
+
+                child: const Text(
+                  "Save Settings",
+                  style: TextStyle(fontSize: 18),
                 ),
               ),
             ),
 
             const SizedBox(height: 20),
+
           ],
         ),
       ),
