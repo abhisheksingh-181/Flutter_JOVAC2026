@@ -4,7 +4,6 @@ void main() {
   runApp(const MyApp());
 }
 
-// Main App
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -12,511 +11,412 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Student Information",
-
-      // Named Route
-      routes: {
-        "/edit": (context) => const EditCourseScreen(),
-      },
-
-      home: const HomeScreen(),
+      title: "Student Registration",
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+      ),
+      home: const StudentRegistration(),
     );
   }
 }
 
-// ---------------- HOME SCREEN ----------------
-
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class StudentRegistration extends StatefulWidget {
+  const StudentRegistration({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<StudentRegistration> createState() =>
+      _StudentRegistrationState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _StudentRegistrationState
+    extends State<StudentRegistration> {
 
-  // Controllers
-  final TextEditingController nameController =
-      TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController rollController =
-      TextEditingController();
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final mobileController = TextEditingController();
+  final rollController = TextEditingController();
+  final cityController = TextEditingController();
 
-  // Default Course
-  String selectedCourse = "Flutter";
+  String? selectedCourse;
 
-  // Updated Course
-  String updatedCourse = "";
+  final List<String> courses = [
+    "B.Tech Computer Science",
+    "B.Tech AI",
+    "BCA",
+    "MCA",
+    "MBA",
+    "B.Com",
+  ];
 
-  @override
+  void resetForm() {
+    nameController.clear();
+    emailController.clear();
+    mobileController.clear();
+    rollController.clear();
+    cityController.clear();
+
+    setState(() {
+      selectedCourse = null;
+    });
+  }
+
+  void submitForm() {
+    if (_formKey.currentState!.validate()) {
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+
+                const CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.green,
+                  child: Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 35,
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+
+                const Text(
+                  "Student Registered Successfully!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                buildRow(
+                    "Name",
+                    nameController.text),
+
+                buildRow(
+                    "Email",
+                    emailController.text),
+
+                buildRow(
+                    "Mobile",
+                    mobileController.text),
+
+                buildRow(
+                    "Roll No",
+                    rollController.text),
+
+                buildRow(
+                    "Course",
+                    selectedCourse!),
+
+                buildRow(
+                    "City",
+                    cityController.text),
+
+                const SizedBox(height: 20),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+
+                      Navigator.pop(context);
+
+                    },
+                    child: const Text("OK"),
+                  ),
+                )
+
+              ],
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  Widget buildRow(
+      String title,
+      String value,
+      ) {
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+          vertical: 4),
+      child: Row(
+        crossAxisAlignment:
+        CrossAxisAlignment.start,
+        children: [
+
+          SizedBox(
+            width: 70,
+            child: Text(
+              "$title :",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          Expanded(
+            child: Text(value),
+          )
+
+        ],
+      ),
+    );
+  }
+    @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       appBar: AppBar(
-        title: const Text("Student Information"),
-        backgroundColor: Colors.blue,
+        title: const Text("Student Registration"),
         centerTitle: true,
+        backgroundColor: Colors.deepPurple,
       ),
 
       body: SingleChildScrollView(
-
         padding: const EdgeInsets.all(16),
 
-        child: Column(
-
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-
-          children: [
-
-            const Text(
-              "Student Name",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 5),
-
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Enter Name",
-              ),
-            ),
-
-            const SizedBox(height: 15),
-
-            const Text(
-              "Roll Number",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 5),
-
-            TextField(
-              controller: rollController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Enter Roll Number",
-              ),
-            ),
-
-            const SizedBox(height: 15),
-
-            const Text(
-              "Select Course",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 5),
-
-            DropdownButtonFormField<String>(
-
-              value: selectedCourse,
-
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-              ),
-
-              items: const [
-
-                DropdownMenuItem(
-                  value: "Flutter",
-                  child: Text("Flutter"),
-                ),
-
-                DropdownMenuItem(
-                  value: "Java",
-                  child: Text("Java"),
-                ),
-
-                DropdownMenuItem(
-                  value: "Python",
-                  child: Text("Python"),
-                ),
-
-                DropdownMenuItem(
-                  value: "AI",
-                  child: Text("AI"),
-                ),
-
-              ],
-
-              onChanged: (value) {
-
-                setState(() {
-
-                  selectedCourse = value!;
-
-                });
-
-              },
-
-            ),
-
-            const SizedBox(height: 25),
-
-            SizedBox(
-
-              width: double.infinity,
-
-              child: ElevatedButton.icon(
-
-                icon: const Icon(Icons.visibility),
-
-                label: const Text("View Details"),
-
-                onPressed: () async {
-
-                  final result =
-                      await Navigator.push(
-
-                    context,
-
-                    MaterialPageRoute(
-
-                      builder: (context) =>
-                          StudentDetailsScreen(
-
-                        name: nameController.text,
-
-                        rollNo:
-                            rollController.text,
-
-                        course:
-                            selectedCourse,
-
-                      ),
-
-                    ),
-
-                  );
-
-                  if (result != null) {
-
-                    setState(() {
-
-                      updatedCourse = result;
-
-                    });
-
-                  }
-
-                },
-
-              ),
-
-            ),
-
-            const SizedBox(height: 20),
-
-            if (updatedCourse.isNotEmpty)
-
-              Card(
-
-                color: Colors.green.shade50,
-
-                child: Padding(
-
-                  padding:
-                      const EdgeInsets.all(12),
-
-                  child: Text(
-
-                    "Updated Course : $updatedCourse",
-
-                    style: const TextStyle(
-
-                      fontWeight:
-                          FontWeight.bold,
-
-                      color: Colors.green,
-
-                    ),
-
-                  ),
-
-                ),
-
-              ),
-
-          ],
-
-        ),
-
-      ),
-
-    );
-
-  }
-
-}
-// ---------------- STUDENT DETAILS SCREEN ----------------
-
-class StudentDetailsScreen extends StatelessWidget {
-  final String name;
-  final String rollNo;
-  final String course;
-
-  const StudentDetailsScreen({
-    super.key,
-    required this.name,
-    required this.rollNo,
-    required this.course,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Student Details"),
-        backgroundColor: Colors.green,
-      ),
-
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-
-          children: [
-
-            Card(
-              elevation: 5,
-
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-
-                  children: [
-
-                    const Center(
-                      child: Text(
-                        "Student Details",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    ListTile(
-                      leading: const Icon(Icons.person),
-                      title: const Text("Name"),
-                      subtitle: Text(name),
-                    ),
-
-                    ListTile(
-                      leading: const Icon(Icons.badge),
-                      title: const Text("Roll No"),
-                      subtitle: Text(rollNo),
-                    ),
-
-                    ListTile(
-                      leading: const Icon(Icons.school),
-                      title: const Text("Course"),
-                      subtitle: Text(course),
-                    ),
-
-                  ],
+        child: Form(
+          key: _formKey,
+
+          child: Column(
+            children: [
+
+              const CircleAvatar(
+                radius: 35,
+                backgroundColor: Color(0xffEDE7F6),
+                child: Icon(
+                  Icons.school,
+                  color: Colors.deepPurple,
+                  size: 40,
                 ),
               ),
-            ),
 
-            const SizedBox(height: 25),
+              const SizedBox(height: 12),
 
-            ElevatedButton.icon(
-
-              icon: const Icon(Icons.edit),
-
-              label: const Text("Edit Course"),
-
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-              ),
-
-              onPressed: () async {
-
-                final updatedCourse =
-                    await Navigator.pushNamed(
-                  context,
-                  "/edit",
-                  arguments: course,
-                );
-
-                if (updatedCourse != null) {
-
-                  Navigator.pop(
-                    context,
-                    updatedCourse,
-                  );
-
-                }
-
-              },
-
-            ),
-
-            const SizedBox(height: 15),
-
-            ElevatedButton.icon(
-
-              icon: const Icon(Icons.arrow_back),
-
-              label: const Text("Go Back"),
-
-              onPressed: () {
-
-                Navigator.pop(context);
-
-              },
-
-            ),
-
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ---------------- EDIT COURSE SCREEN ----------------
-
-class EditCourseScreen extends StatefulWidget {
-  const EditCourseScreen({super.key});
-
-  @override
-  State<EditCourseScreen> createState() =>
-      _EditCourseScreenState();
-}
-
-class _EditCourseScreenState
-    extends State<EditCourseScreen> {
-
-  String selectedCourse = "Flutter";
-
-  @override
-  Widget build(BuildContext context) {
-
-    // Receive current course
-    final String currentCourse =
-        ModalRoute.of(context)!.settings.arguments
-            as String;
-
-    selectedCourse = currentCourse;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Edit Course"),
-        backgroundColor: Colors.orange,
-      ),
-
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-
-          children: [
-
-            const Center(
-              child: Text(
-                "Select New Course",
+              const Text(
+                "Student Registration",
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 5),
 
-            RadioListTile<String>(
-              title: const Text("Flutter"),
-              value: "Flutter",
-              groupValue: selectedCourse,
-              onChanged: (value) {
-                setState(() {
-                  selectedCourse = value!;
-                });
-              },
-            ),
-
-            RadioListTile<String>(
-              title: const Text("Java"),
-              value: "Java",
-              groupValue: selectedCourse,
-              onChanged: (value) {
-                setState(() {
-                  selectedCourse = value!;
-                });
-              },
-            ),
-
-            RadioListTile<String>(
-              title: const Text("Python"),
-              value: "Python",
-              groupValue: selectedCourse,
-              onChanged: (value) {
-                setState(() {
-                  selectedCourse = value!;
-                });
-              },
-            ),
-
-            RadioListTile<String>(
-              title: const Text("AI"),
-              value: "AI",
-              groupValue: selectedCourse,
-              onChanged: (value) {
-                setState(() {
-                  selectedCourse = value!;
-                });
-              },
-            ),
-
-            const SizedBox(height: 20),
-
-            SizedBox(
-              width: double.infinity,
-
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.save),
-                label: const Text("Save Changes"),
-
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
+              const Text(
+                "Please fill in the details to register",
+                style: TextStyle(
+                  color: Colors.grey,
                 ),
+              ),
 
-                onPressed: () {
+              const SizedBox(height: 20),
 
-                  // Return updated course
-                  Navigator.pop(
-                    context,
-                    selectedCourse,
-                  );
-
+              TextFormField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: "Full Name",
+                  prefixIcon: Icon(Icons.person),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter your full name";
+                  }
+                  return null;
                 },
               ),
-            ),
 
-          ],
+              const SizedBox(height: 15),
+
+              TextFormField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: "Email Address",
+                  prefixIcon: Icon(Icons.email),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter your email";
+                  }
+
+                  if (!value.contains("@")) {
+                    return "Enter valid email";
+                  }
+
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 15),
+
+              TextFormField(
+                controller: mobileController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: "Mobile Number",
+                  prefixIcon: Icon(Icons.phone),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+
+                  if (value == null || value.isEmpty) {
+                    return "Please enter mobile number";
+                  }
+
+                  if (value.length != 10) {
+                    return "Enter 10 digit mobile number";
+                  }
+
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 15),
+
+              TextFormField(
+                controller: rollController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: "Roll Number",
+                  prefixIcon: Icon(Icons.badge),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter roll number";
+                  }
+
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 15),
+
+              DropdownButtonFormField<String>(
+                value: selectedCourse,
+
+                decoration: const InputDecoration(
+                  labelText: "Course",
+                  prefixIcon: Icon(Icons.menu_book),
+                  border: OutlineInputBorder(),
+                ),
+
+                items: courses.map((course) {
+                  return DropdownMenuItem(
+                    value: course,
+                    child: Text(course),
+                  );
+                }).toList(),
+
+                onChanged: (value) {
+                  setState(() {
+                    selectedCourse = value;
+                  });
+                },
+
+                validator: (value) {
+                  if (value == null) {
+                    return "Please select course";
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 15),
+
+              TextFormField(
+                controller: cityController,
+                decoration: const InputDecoration(
+                  labelText: "City",
+                  prefixIcon: Icon(Icons.location_on),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter city";
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 25),
+                            Row(
+                children: [
+
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: resetForm,
+                      icon: const Icon(
+                        Icons.refresh,
+                        color: Colors.red,
+                      ),
+                      label: const Text(
+                        "Reset",
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 15),
+
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                        ),
+                      ),
+                      onPressed: submitForm,
+                      icon: const Icon(
+                        Icons.send,
+                        color: Colors.white,
+                      ),
+                      label: const Text(
+                        "Submit",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    mobileController.dispose();
+    rollController.dispose();
+    cityController.dispose();
+    super.dispose();
   }
 }
