@@ -1,168 +1,205 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const CollegePortalApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CollegePortalApp extends StatelessWidget {
+  const CollegePortalApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Student Assignment Portal",
+      title: "College Student Portal",
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.deepPurple,
       ),
-      home: const HomePage(),
+      home: const MainScreen(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MainScreenState extends State<MainScreen>
+    with SingleTickerProviderStateMixin {
+
+  late TabController _tabController;
+
+  int currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  final List<Widget> pages = const [
+
+    HomePage(),
+
+    AttendancePage(),
+
+    AssignmentPage(),
+
+    ProfilePage(),
+
+  ];
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
 
-      appBar: AppBar(
-        title: const Text(
-          "Student Assignment Portal",
-        ),
-        centerTitle: true,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 15),
-            child: Icon(Icons.notifications),
-          )
-        ],
-      ),
+      drawer: Drawer(
 
-      body: SingleChildScrollView(
-
-        padding: const EdgeInsets.all(16),
-
-        child: Column(
+        child: ListView(
 
           children: [
 
-            Card(
+            UserAccountsDrawerHeader(
 
-              elevation: 5,
-
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
+              decoration: const BoxDecoration(
+                color: Colors.deepPurple,
               ),
 
-              child: Padding(
+              accountName: const Text("Abhishek singh"),
 
-                padding: const EdgeInsets.all(16),
+              accountEmail:
+                  const Text("B.Tech CSE\nRoll No : 101"),
 
-                child: Column(
-
-                  children: [
-
-                    const CircleAvatar(
-                      radius: 45,
-                      child: Icon(
-                        Icons.assignment,
-                        size: 50,
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    buildRow(
-                      "Assignment",
-                      "Flutter UI Widgets",
-                    ),
-
-                    buildRow(
-                      "Subject",
-                      "Mobile App Development",
-                    ),
-
-                    buildRow(
-                      "Faculty",
-                      "Mr. Pankaj Kapoor",
-                    ),
-
-                    buildRow(
-                      "Due Date",
-                      "30 July 2026",
-                    ),
-
-                    buildRow(
-                      "Marks",
-                      "100",
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    SizedBox(
-
-                      width: double.infinity,
-
-                      child: ElevatedButton.icon(
-
-                        onPressed: () {
-
-                        },
-
-                        icon: const Icon(Icons.upload),
-
-                        label: const Text(
-                          "Submit Assignment",
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    SizedBox(
-
-                      width: double.infinity,
-
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) =>
-          const SubmitAssignmentScreen(),
-    ),
-  );
-},
-
-                        icon: const Icon(Icons.menu_book),
-
-                        label: const Text(
-                          "View Guidelines",
-                        ),
-                      ),
-                    ),
-
-                  ],
+              currentAccountPicture: const CircleAvatar(
+                child: Icon(
+                  Icons.person,
+                  size: 40,
                 ),
               ),
+
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.dashboard),
+              title: const Text("Dashboard"),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text("Profile"),
+              onTap: () {
+                setState(() {
+                  currentIndex = 3;
+                });
+                Navigator.pop(context);
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text("Settings"),
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.help),
+              title: const Text("Help"),
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text("Logout"),
             ),
 
           ],
+
         ),
+
       ),
+
+      appBar: AppBar(
+
+        backgroundColor: Colors.deepPurple,
+
+        title: const Text(
+          "College Student Portal",
+        ),
+
+        bottom: currentIndex == 0
+            ? TabBar(
+                controller: _tabController,
+                tabs: const [
+
+                  Tab(text: "Courses"),
+
+                  Tab(text: "Notices"),
+
+                  Tab(text: "Results"),
+
+                ],
+              )
+            : null,
+
+      ),
+body: currentIndex == 0
+    ? Column(
+        children: [
+
+          const Expanded(
+            flex: 4,
+            child: HomePage(),
+          ),
+
+          Expanded(
+            flex: 5,
+            child: TabBarView(
+              controller: _tabController,
+              children: const [
+                CoursesTab(),
+                NoticesTab(),
+                ResultsTab(),
+              ],
+            ),
+          ),
+
+        ],
+      )
+    : pages[currentIndex],
 
       bottomNavigationBar: BottomNavigationBar(
 
-        currentIndex: 0,
+        currentIndex: currentIndex,
+
+        selectedItemColor: Colors.deepPurple,
+
+        type: BottomNavigationBarType.fixed,
+
+        onTap: (index) {
+
+          setState(() {
+
+            currentIndex = index;
+
+          });
+
+        },
 
         items: const [
 
@@ -172,597 +209,994 @@ class _HomePageState extends State<HomePage> {
           ),
 
           BottomNavigationBarItem(
+            icon: Icon(Icons.fact_check),
+            label: "Attendance",
+          ),
+
+          BottomNavigationBarItem(
             icon: Icon(Icons.assignment),
-            label: "Submission",
+            label: "Assignments",
           ),
 
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: "Profile",
           ),
+
         ],
+
       ),
+
     );
   }
+}
 
-  Widget buildRow(String title, String value) {
+/// ---------------- HOME ----------------
 
-    return Padding(
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
-      padding: const EdgeInsets.symmetric(vertical: 6),
-
-      child: Row(
-
+  Widget quickCard(
+      Color color, IconData icon, String title) {
+    return Container(
+      width: 150,
+      height: 85,
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-
-          Expanded(
-            flex: 2,
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+          Icon(icon, color: color, size: 30),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
             ),
           ),
-
-          Expanded(
-            flex: 3,
-            child: Text(value),
-          ),
-
         ],
       ),
     );
-  }
-}
-class SubmitAssignmentScreen extends StatefulWidget {
-  const SubmitAssignmentScreen({super.key});
-
-  @override
-  State<SubmitAssignmentScreen> createState() =>
-      _SubmitAssignmentScreenState();
-}
-
-class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
-
-  DateTime selectedDate = DateTime.now();
-  TimeOfDay selectedTime = TimeOfDay.now();
-
-  Future<void> pickDate() async {
-
-    DateTime? date = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2024),
-      lastDate: DateTime(2030),
-    );
-
-    if (date != null) {
-      setState(() {
-        selectedDate = date;
-      });
-    }
-  }
-
-  Future<void> pickTime() async {
-
-    TimeOfDay? time = await showTimePicker(
-      context: context,
-      initialTime: selectedTime,
-    );
-
-    if (time != null) {
-      setState(() {
-        selectedTime = time;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
 
-    return Scaffold(
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: const BoxDecoration(
+              color: Colors.teal,
+            ),
+            child: Row(
+              children: [
 
-      appBar: AppBar(
-        title: const Text("Submit Assignment"),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: const [
+
+                      Text(
+                        "Welcome Back 👋",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+
+                      SizedBox(height: 10),
+
+                      Text(
+                        "Abhishek Singh",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        ),
+                      ),
+
+                      SizedBox(height: 5),
+
+                      Text(
+                        "B.Tech CSE | Roll No:101",
+                        style: TextStyle(
+                          color: Colors.white70,
+                        ),
+                      ),
+
+                    ],
+                  ),
+                ),
+
+                const CircleAvatar(
+                  radius: 35,
+                  child: Icon(
+                    Icons.person,
+                    size: 40,
+                  ),
+                )
+
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Quick Links",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 15),
+
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16),
+
+            child: Wrap(
+              spacing: 15,
+              runSpacing: 15,
+              children: [
+
+                quickCard(
+                  Colors.orange,
+                  Icons.menu_book,
+                  "Courses",
+                ),
+
+                quickCard(
+                  Colors.deepPurple,
+                  Icons.campaign,
+                  "Notices",
+                ),
+
+                quickCard(
+                  Colors.green,
+                  Icons.assignment,
+                  "Assignments",
+                ),
+
+                quickCard(
+                  Colors.red,
+                  Icons.bar_chart,
+                  "Results",
+                ),
+
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 25),
+
+          Card(
+            margin:
+                const EdgeInsets.symmetric(horizontal: 16),
+
+            child: ListTile(
+              leading: const CircleAvatar(
+                child: Icon(Icons.school),
+              ),
+              title: const Text(
+                "Flutter Development",
+              ),
+              subtitle: const Text(
+                  "Instructor : Mr. Sharma"),
+              trailing: Chip(
+                label: const Text("Active"),
+                backgroundColor:
+                    Colors.green.shade100,
+              ),
+            ),
+          ),
+
+          Card(
+            margin:
+                const EdgeInsets.symmetric(horizontal: 16),
+
+            child: ListTile(
+              leading: const CircleAvatar(
+                child: Icon(Icons.computer),
+              ),
+              title: const Text(
+                "Python Programming",
+              ),
+              subtitle:
+                  const Text("Instructor : Mr. Verma"),
+              trailing: Chip(
+                label: const Text("Ongoing"),
+                backgroundColor:
+                    Colors.orange.shade100,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+        ],
       ),
+    );
+  }
+}
 
-      body: Padding(
+/// ---------------- ATTENDANCE ----------------
 
-        padding: const EdgeInsets.all(16),
+class AttendancePage extends StatelessWidget {
+  const AttendancePage({super.key});
 
-        child: Column(
+  Widget attendanceTile(
+      IconData icon,
+      Color color,
+      String title,
+      String value) {
+    return Card(
+      margin: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 6,
+      ),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: color.withOpacity(.15),
+          child: Icon(
+            icon,
+            color: color,
+          ),
+        ),
+        title: Text(title),
+        trailing: Text(
+          value,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
 
-          crossAxisAlignment: CrossAxisAlignment.start,
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
 
-          children: [
+      child: Column(
 
-            const Text(
-              "Select Submission Date",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+        children: [
+
+          const SizedBox(height: 20),
+
+          const Text(
+            "My Attendance",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
             ),
+          ),
 
-            const SizedBox(height: 10),
+          const SizedBox(height: 20),
 
-            InkWell(
+          SizedBox(
+            height: 180,
+            width: 180,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
 
-              onTap: pickDate,
-
-              child: Container(
-
-                width: double.infinity,
-
-                padding: const EdgeInsets.all(15),
-
-                decoration: BoxDecoration(
-
-                  border: Border.all(),
-
-                  borderRadius: BorderRadius.circular(10),
-
+                SizedBox(
+                  height: 170,
+                  width: 170,
+                  child: CircularProgressIndicator(
+                    value: .85,
+                    strokeWidth: 12,
+                    backgroundColor: Colors.grey.shade300,
+                    color: Colors.blue,
+                  ),
                 ),
 
-                child: Row(
-
+                const Column(
                   mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-
+                      MainAxisAlignment.center,
                   children: [
 
                     Text(
-                      "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                      "85%",
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
 
-                    const Icon(Icons.calendar_today)
+                    Text("Present"),
 
                   ],
                 ),
-              ),
+
+              ],
             ),
+          ),
 
-            const SizedBox(height: 20),
+          const SizedBox(height: 25),
 
-            const Text(
-              "Select Submission Time",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+          attendanceTile(
+            Icons.calendar_month,
+            Colors.blue,
+            "Total Classes",
+            "120",
+          ),
 
-            const SizedBox(height: 10),
+          attendanceTile(
+            Icons.check_circle,
+            Colors.green,
+            "Classes Attended",
+            "102",
+          ),
 
-            InkWell(
+          attendanceTile(
+            Icons.cancel,
+            Colors.red,
+            "Classes Missed",
+            "18",
+          ),
 
-              onTap: pickTime,
+          attendanceTile(
+            Icons.percent,
+            Colors.deepPurple,
+            "Attendance Percentage",
+            "85%",
+          ),
 
-              child: Container(
+          const SizedBox(height: 20),
 
-                width: double.infinity,
+          Card(
+            margin:
+                const EdgeInsets.symmetric(horizontal: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                children: const [
 
-                padding: const EdgeInsets.all(15),
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
 
-                decoration: BoxDecoration(
+                      Text("Minimum Required"),
 
-                  border: Border.all(),
+                      Text(
+                        "75%",
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
 
-                  borderRadius: BorderRadius.circular(10),
-
-                ),
-
-                child: Row(
-
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-
-                  children: [
-
-                    Text(
-                      selectedTime.format(context),
-                    ),
-
-                    const Icon(Icons.access_time)
-
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            Container(
-
-              padding: const EdgeInsets.all(12),
-
-              decoration: BoxDecoration(
-
-                border: Border.all(),
-
-                borderRadius: BorderRadius.circular(10),
-
-              ),
-
-              child: const Row(
-
-                children: [
-
-                  Icon(
-                    Icons.picture_as_pdf,
-                    color: Colors.red,
+                    ],
                   ),
 
-                  SizedBox(width: 10),
+                  SizedBox(height: 10),
 
-                  Expanded(
-                    child: Text(
-                      "assignment_flutter.pdf",
-                    ),
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+
+                      Text("Current"),
+
+                      Text(
+                        "85%",
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                    ],
                   ),
-
-                  Icon(Icons.close)
 
                 ],
               ),
             ),
+          ),
 
-            const Spacer(),
+          const SizedBox(height: 20),
 
-            SizedBox(
+        ],
+      ),
+    );
+  }
+}
 
-              width: double.infinity,
+/// ---------------- ASSIGNMENTS ----------------
 
-              child: ElevatedButton(
+class AssignmentPage extends StatelessWidget {
+  const AssignmentPage({super.key});
 
-                onPressed: () {},
-
-                child: const Text(
-                  "Submit Assignment",
-                ),
-              ),
-            )
-
-          ],
+  Widget assignmentCard({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subject,
+    required String dueDate,
+    required String status,
+    required Color statusColor,
+  }) {
+    return Card(
+      margin: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 8,
+      ),
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: color.withOpacity(.15),
+          child: Icon(
+            icon,
+            color: color,
+          ),
         ),
-      ),
-    );
-  }
-}
-class UploadingScreen extends StatefulWidget {
-  const UploadingScreen({super.key});
-
-  @override
-  State<UploadingScreen> createState() => _UploadingScreenState();
-}
-
-class _UploadingScreenState extends State<UploadingScreen> {
-
-  double progress = 0.0;
-
-  @override
-  void initState() {
-    super.initState();
-    startUpload();
-  }
-
-  void startUpload() async {
-
-    while (progress < 0.65) {
-
-      await Future.delayed(const Duration(milliseconds: 120));
-
-      setState(() {
-        progress += 0.01;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-
-      appBar: AppBar(
-        title: const Text("Uploading Assignment"),
-      ),
-
-      body: Center(
-
-        child: Column(
-
-          mainAxisAlignment: MainAxisAlignment.center,
-
-          children: [
-
-            const Icon(
-              Icons.cloud_upload,
-              size: 100,
-              color: Colors.deepPurple,
-            ),
-
-            const SizedBox(height: 20),
-
-            const Text(
-              "Uploading Assignment...",
-              style: TextStyle(fontSize: 20),
-            ),
-
-            const SizedBox(height: 30),
-
-            SizedBox(
-
-              width: 220,
-
-              child: LinearProgressIndicator(
-                value: progress,
-                minHeight: 10,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            Text(
-              "${(progress * 100).toInt()} %",
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 40),
-
-            ElevatedButton(
-
-              onPressed: () {
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const SuccessScreen(),
-                  ),
-                );
-
-              },
-
-              child: const Text("Finish Upload"),
-            )
-
-          ],
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
         ),
-      ),
-    );
-  }
-}
-
-class SuccessScreen extends StatelessWidget {
-
-  const SuccessScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-
-      appBar: AppBar(
-        title: const Text("Submission Successful"),
-      ),
-
-      body: Center(
-
-        child: Column(
-
-          mainAxisAlignment: MainAxisAlignment.center,
-
-          children: [
-
-            const CircleAvatar(
-              radius: 45,
-              backgroundColor: Colors.green,
-              child: Icon(
-                Icons.check,
-                color: Colors.white,
-                size: 50,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            const Text(
-              "Assignment Submitted Successfully",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            const Text("Student : Rahul Sharma"),
-            const Text("Assignment : Flutter UI Widgets"),
-            const Text("Date : 28 July 2026"),
-            const Text("Time : 03:30 PM"),
-
-            const SizedBox(height: 40),
-
-           ElevatedButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const RatingScreen(),
-      ),
-    );
-  },
-  child: const Text("Back To Home"),
-
-            )
-
-          ],
-        ),
-      ),
-    );
-  }
-}
-class RatingScreen extends StatefulWidget {
-  const RatingScreen({super.key});
-
-  @override
-  State<RatingScreen> createState() => _RatingScreenState();
-}
-
-class _RatingScreenState extends State<RatingScreen> {
-
-  double rating = 4.5;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Rate Your Experience"),
-      ),
-
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-
-            const Text(
-              "How was your assignment submission?",
-              style: TextStyle(fontSize: 18),
-            ),
-
-            const SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                return Icon(
-                  index < rating.floor()
-                      ? Icons.star
-                      : Icons.star_border,
-                  color: Colors.amber,
-                  size: 40,
-                );
-              }),
-            ),
-
-            const SizedBox(height: 20),
-
-            Text(
-              "$rating / 5",
-              style: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 30),
-
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const GuidelinesScreen(),
-                  ),
-                );
-              },
-              child: const Text("Next"),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class GuidelinesScreen extends StatelessWidget {
-  const GuidelinesScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Assignment Guidelines"),
-      ),
-
-      body: const Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
+        subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
+            Text(subject),
+            const SizedBox(height: 4),
             Text(
-              "Assignment Guidelines",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+              "Due: $dueDate",
+              style: const TextStyle(
+                color: Colors.red,
+                fontSize: 12,
               ),
             ),
-
-            SizedBox(height: 20),
-
-            Text("• Build UI using Flutter widgets"),
-            Text("• Follow good coding practices"),
-            Text("• Submit before the last date"),
-            Text("• Upload PDF or ZIP file"),
-
           ],
+        ),
+        trailing: Chip(
+          backgroundColor: statusColor.withOpacity(.15),
+          label: Text(
+            status,
+            style: TextStyle(
+              color: statusColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 11,
+            ),
+          ),
         ),
       ),
     );
   }
-}
-
-class TooltipDemoScreen extends StatelessWidget {
-  const TooltipDemoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return SingleChildScrollView(
 
-    return Scaffold(
+      child: Column(
 
-      appBar: AppBar(
-        title: const Text("Tooltip Demo"),
+        children: [
+
+          const SizedBox(height: 20),
+
+          const Text(
+            "My Assignments",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          assignmentCard(
+            icon: Icons.description,
+            color: Colors.blue,
+            title: "Flutter Assignment-13",
+            subject: "Build Navigation UI",
+            dueDate: "24 May 2025",
+            status: "Due Tomorrow",
+            statusColor: Colors.red,
+          ),
+
+          assignmentCard(
+            icon: Icons.code,
+            color: Colors.green,
+            title: "Java Assignment-7",
+            subject: "OOP Concepts",
+            dueDate: "25 May 2025",
+            status: "3 Days Left",
+            statusColor: Colors.orange,
+          ),
+
+          assignmentCard(
+            icon: Icons.memory,
+            color: Colors.orange,
+            title: "Python Assignment-5",
+            subject: "Functions & Modules",
+            dueDate: "28 May 2025",
+            status: "6 Days Left",
+            statusColor: Colors.green,
+          ),
+
+          assignmentCard(
+            icon: Icons.storage,
+            color: Colors.deepPurple,
+            title: "DBMS Assignment",
+            subject: "Normalization",
+            dueDate: "30 May 2025",
+            status: "1 Week Left",
+            statusColor: Colors.blue,
+          ),
+
+          assignmentCard(
+            icon: Icons.language,
+            color: Colors.teal,
+            title: "Web Development",
+            subject: "Responsive Layout",
+            dueDate: "02 June 2025",
+            status: "Pending",
+            statusColor: Colors.purple,
+          ),
+
+          const SizedBox(height: 20),
+
+          Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                children: const [
+
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+
+                      Text(
+                        "Total Assignments",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      Text("5"),
+
+                    ],
+                  ),
+
+                  SizedBox(height: 12),
+
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+
+                      Text(
+                        "Completed",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      Text(
+                        "2",
+                        style: TextStyle(
+                          color: Colors.green,
+                        ),
+                      ),
+
+                    ],
+                  ),
+
+                  SizedBox(height: 12),
+
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+
+                      Text(
+                        "Pending",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      Text(
+                        "3",
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
+
+                    ],
+                  ),
+
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+        ],
+      ),
+    );
+  }
+}
+
+/// ---------------- PROFILE ----------------
+
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
+  Widget infoTile(
+      IconData icon,
+      Color color,
+      String title,
+      String value) {
+    return Card(
+      margin: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 6,
+      ),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: color.withOpacity(.15),
+          child: Icon(
+            icon,
+            color: color,
+          ),
+        ),
+        title: Text(title),
+        subtitle: Text(value),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+
+      child: Column(
+
+        children: [
+
+          const SizedBox(height: 25),
+
+          const CircleAvatar(
+            radius: 55,
+            backgroundColor: Colors.deepPurple,
+            child: Icon(
+              Icons.person,
+              size: 60,
+              color: Colors.white,
+            ),
+          ),
+
+          const SizedBox(height: 15),
+
+          const Text(
+            "Abhishek Singh",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 5),
+
+          const Text(
+            "B.Tech Computer Science",
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 16,
+            ),
+          ),
+
+          const SizedBox(height: 25),
+
+          infoTile(
+            Icons.badge,
+            Colors.blue,
+            "Roll Number",
+            "101",
+          ),
+
+          infoTile(
+            Icons.email,
+            Colors.red,
+            "Email",
+            "abhisheksingh@gmail.com",
+          ),
+
+          infoTile(
+            Icons.phone,
+            Colors.green,
+            "Phone",
+            "+91 9876543210",
+          ),
+
+          infoTile(
+            Icons.school,
+            Colors.orange,
+            "Department",
+            "Computer Science",
+          ),
+
+          infoTile(
+            Icons.calendar_today,
+            Colors.purple,
+            "Semester",
+            "5th Semester",
+          ),
+
+          const SizedBox(height: 25),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+
+            child: SizedBox(
+              width: double.infinity,
+
+              child: ElevatedButton.icon(
+
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  padding: const EdgeInsets.all(15),
+                ),
+
+                icon: const Icon(Icons.edit),
+
+                label: const Text(
+                  "Edit Profile",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+
+                onPressed: () {
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+
+                    const SnackBar(
+
+                      content:
+                          Text("Profile Updated Successfully"),
+
+                    ),
+
+                  );
+
+                },
+
+              ),
+
+            ),
+
+          ),
+
+          const SizedBox(height: 15),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+
+            child: SizedBox(
+              width: double.infinity,
+
+              child: OutlinedButton.icon(
+
+                icon: const Icon(Icons.logout),
+
+                label: const Text("Logout"),
+
+                onPressed: () {
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+
+                    const SnackBar(
+
+                      content: Text("Logged Out"),
+
+                    ),
+
+                  );
+
+                },
+
+              ),
+
+            ),
+
+          ),
+
+          const SizedBox(height: 30),
+
+        ],
+
       ),
 
-      body: Center(
+    );
+  }
+}
 
-        child: Wrap(
+/// ---------------- TAB 1 ----------------
 
-          spacing: 20,
-          runSpacing: 20,
+class CoursesTab extends StatelessWidget {
+  const CoursesTab({super.key});
 
+  Widget courseCard(
+      IconData icon,
+      Color color,
+      String title,
+      String subtitle,
+      String teacher) {
+    return Card(
+      margin: const EdgeInsets.symmetric(
+          horizontal: 12, vertical: 6),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: color.withOpacity(.15),
+          child: Icon(icon, color: color),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+              fontWeight: FontWeight.bold),
+        ),
+        subtitle: Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
           children: [
-
-            Tooltip(
-              message: "Select Date",
-              child: Icon(Icons.calendar_month, size: 60),
+            Text(subtitle),
+            Text(
+              teacher,
+              style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12),
             ),
-
-            Tooltip(
-              message: "Select Time",
-              child: Icon(Icons.access_time, size: 60),
-            ),
-
-            Tooltip(
-              message: "Upload File",
-              child: Icon(Icons.upload_file, size: 60),
-            ),
-
-            Tooltip(
-              message: "Rate Experience",
-              child: Icon(Icons.star, size: 60),
-            ),
-
-            Tooltip(
-              message: "Assignment Guidelines",
-              child: Icon(Icons.menu_book, size: 60),
-            ),
-
           ],
         ),
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+
+        courseCard(
+          Icons.menu_book,
+          Colors.blue,
+          "Flutter Development",
+          "Learn Flutter from Basics",
+          "Instructor: Mr. Sharma",
+        ),
+
+        courseCard(
+          Icons.computer,
+          Colors.green,
+          "Java Programming",
+          "Core Java and OOPs",
+          "Instructor: Ms. Joshi",
+        ),
+
+        courseCard(
+          Icons.code,
+          Colors.orange,
+          "Python Programming",
+          "Python for Beginners",
+          "Instructor: Mr. Verma",
+        ),
+
+      ],
+    );
+  }
 }
+
+/// ---------------- TAB 2 ----------------
+
+class NoticesTab extends StatelessWidget {
+  const NoticesTab({super.key});
+
+  Widget noticeCard(
+      IconData icon,
+      Color color,
+      String title,
+      String date,
+      String subtitle) {
+    return Card(
+      margin: const EdgeInsets.symmetric(
+          horizontal: 12, vertical: 6),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: color.withOpacity(.15),
+          child: Icon(icon, color: color),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+              fontWeight: FontWeight.bold),
+        ),
+        subtitle: Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+          children: [
+            Text(
+              date,
+              style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey),
+            ),
+            const SizedBox(height: 4),
+            Text(subtitle),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+
+        noticeCard(
+          Icons.campaign,
+          Colors.deepPurple,
+          "Holiday Tomorrow",
+          "20 May 2025",
+          "College will remain closed tomorrow on account of Local Holiday.",
+        ),
+
+        noticeCard(
+          Icons.description,
+          Colors.blue,
+          "Flutter Assignment Submission",
+          "18 May 2025",
+          "Submit your Flutter Assignment before 22 May 2025.",
+        ),
+
+        noticeCard(
+          Icons.calendar_month,
+          Colors.orange,
+          "Mid Semester Exam",
+          "15 May 2025",
+          "Mid Semester Exams will start from 1st June 2025.",
+        ),
+
+      ],
+    );
+  }
+}
+
+/// ---------------- TAB 3 ----------------
+
+class ResultsTab extends StatelessWidget {
+  const ResultsTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox();
+  }
+}
+
+
